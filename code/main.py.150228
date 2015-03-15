@@ -1,0 +1,148 @@
+#flow:
+#step0 define functions and perceptron class
+#step1 read data from files (train.csv and test.csv)
+#    need information:
+#    y -> lable
+#    X -> input vector
+#    d -> dimension of X
+#    N -> number of data
+#step2 resturct data to feasible format
+#    yn = g(Xnj), j=1~d
+#    target: find g !
+#step3 feed data for training proceptron
+#step4 evaluate g(X) by test data
+#step final close files
+
+import numpy as np
+import csv
+import logging
+import random
+
+log_file = "./nomal_logger.log"
+log_level = logging.INFO
+logger = logging.getLogger("main")
+handler = logging.FileHandler(log_file, mode='w')
+formatter = logging.Formatter("[%(levelname)s][%(funcName)s]\
+[%(asctime)s]%(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(log_level)
+
+#Start
+#step0 define functions and perceptron class
+
+
+class Perceptron:
+    def __init__(self, Pid, d):
+        self.Pid = Pid  # perceptron id
+        self.dim = d
+        #self.w = np.ones(self.dim)
+        self.w = []
+        for i in range(self.dim):
+            self.w.append(random.uniform(-1, 1))
+        self.th = random.random()
+
+        logger.info("Perceptron id%d" % seld.Pid)
+        logger.info("Weight: ")
+        logger.info(self.w)
+        logger.info("Thresold: %f" % self.th)
+
+    def UpdateWeight(self, X, y):
+        self.w = self.w + y * X
+
+    def GetWeight(self):
+        return self.w
+
+    def CalResult(self, X):
+        self.y = np.dot(self.w, X)
+        if self.y > 0:
+            self.y = 1
+        else:
+            self.y = -1
+        return self.y
+
+    def GetResult(self):
+        return self.y
+
+
+def Train(P, X, desire_y):
+    tmp_y = P.CalResult(X)
+    if desire_y != tmp_y:
+        P.UpdateWeight(X, desire_y)
+
+
+Class = 10    # multi-classfication
+Iteration = 100
+
+if __name__ == "__main__":
+
+#step1 read data from files (train.csv and test.csv)
+    logger.info("Step1 read data")
+    f1 = open('../train.csv', "r")
+    #f2 = open('../test.csv', "r")
+    f2 = open('../pseudotest.csv', "r")
+    train_data = csv.reader(f1)
+    test_data = csv.reader(f2)
+    logger.info("read data finish")
+
+#step2 resturct data to feasible format
+    logger.info("Step2 resturct data")
+    Labels = []
+    X = []    # input vector
+    read_index = 0
+    for row in train_data:
+        if read_index:
+            Labels.append(row[0])
+            X.append(np.array(row[1:]))
+
+        read_index = read_index + 1
+
+    Labels = np.array(Labels, dtype=float)
+    d = len(X[0])    # d -> dimension of X
+    N = len(X)       # N -> number of data
+    logger.info("resturct data finish")
+
+    logger.debug(N)
+    logger.debug(d)
+    logger.debug(len(X))
+    logger.debug((X[0][132]))
+    logger.debug((X[14][125]))
+    logger.debug((X[54][129]))
+    logger.debug((X[16][514]))
+    logger.debug((X[41999][783]))
+
+#step3 feed data for training proceptron
+#create 10 proceptrons for multiclassification
+    logger.info("Step3 training")
+    Perceptron_list = []
+    cur_x = np.array([])
+    for i in range(Class):
+        Perceptron_list.append(Perceptron(i, d))
+
+    for i in range(1):
+        logger.info(("Data NO%d" % (i)))
+        cur_label = Labels[i]    # current desired label
+        logger.info(("cur_label = %d" % cur_label))
+        cur_x = X[i]             # current input vector
+        cur_x = np.array(cur_x, dtype=float)
+        for j in range(Class):
+            logger.info(("Train Per NO.%d" % j))
+            if j == cur_label:    # perceptron NO y should say 1
+                logger.info("active")
+                Train(Perceptron_list[j], cur_x, 1)
+            else:                 # others should say -1
+                logger.info("in-active")
+                Train(Perceptron_list[j], cur_x, -1)
+
+    logger.info("training finish")
+
+    for i in range(Class):
+        logger.debug(("Perceptron NO%d" % i))
+        logger.debug((Perceptron_list[i].GetWeight()))
+#step4 evaluate g(X) by test data
+    logger.info("Step4 test data")
+    logger.info("test data finish")
+#step final close files
+    f1.close()
+    f2.close()
+    logger.info("End of program")
