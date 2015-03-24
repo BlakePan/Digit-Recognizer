@@ -15,9 +15,10 @@
 
 import numpy as np
 from numpy import linalg as LA
-import csv
+#import csv
 import logging
 import random
+import CSVRW
 
 #logging setting
 log_file = "./LOG.log"
@@ -97,25 +98,31 @@ if __name__ == "__main__":
 
 #step1 read data from files (train.csv and test.csv)
     logger.info("Step1 read data")
+    '''
     f1 = open('../train.csv', "r")
     f2 = open('../test.csv', "r")
     #f2 = open('../pseudotest.csv', "r")
     train_data = csv.reader(f1)
     test_data = csv.reader(f2)
+    '''
     logger.info("read data finish")
 
 #step2 resturct data to feasible format
     logger.info("Step2 resturct data")
+
     Labels = []
     X = []    # input vector
+    T = []    # test data
+    '''
     read_index = 0
     for row in train_data:
         if read_index:
             Labels.append(row[0])
             X.append(np.array(row[1:]))
         read_index = read_index + 1
+    '''
 
-    #Labels = np.array(Labels, dtype=float)
+    CSVRW.CSV_read(Labels, X, T)
     d = len(X[0])    # d -> dimension of X
     N = len(X)       # N -> number of data
     '''
@@ -166,12 +173,14 @@ if __name__ == "__main__":
 
 #step4 evaluate g(X) by test data
     logger.info("Step4 test data")
+    '''
     T = []    # test data
     read_index = 0
     for row in test_data:
         if read_index:
             T.append(np.array(row[0:]))
         read_index += 1
+    '''
 
     N_T = len(T)       # number of test data
     Record = []        # record for test result
@@ -212,15 +221,14 @@ if __name__ == "__main__":
 #step5 write result to csv file
     logger.info("Step5 write data")
 
-    with open('PLA.csv', 'w') as f3:
-        csv_writer = csv.writer(f3)
-        csv_writer.writerow(["ImageId", "Label"])
-        for y in range(N_T):
-            csv_writer.writerow([y + 1, New_Record[y]['ID']])
+    CSVRW.CSV_write('PLAver1.1', N_T, New_Record)
 
     logger.info("write data finish")
 
+'''
 #step final close files
+
     f1.close()
     f2.close()
     logger.info("End of program")
+'''

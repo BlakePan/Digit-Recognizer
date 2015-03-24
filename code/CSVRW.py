@@ -19,34 +19,26 @@ logger.setLevel(log_level)
 
 
 def CSV_read(Labels, X, T):
-    #open files
-    f1 = open('../train.csv', "r")
-    f2 = open('../test.csv', "r")
-    #f2 = open('../pseudotest.csv', "r")
-    train_data = csv.reader(f1)
-    test_data = csv.reader(f2)
-
-    #Labels = []
-    #read training data and lables
-    #X = []    # input vector
-    read_index = 0
-    for row in train_data:
-        if read_index:
+    with open('../train.csv', 'r') as incsv:
+        train_data = csv.reader(incsv)    # read training data and lables
+        next(train_data)    # skip first row
+        for row in train_data:
             Labels.append(row[0])
             X.append(np.array(row[1:]))
-        read_index = read_index + 1
 
-    #read testing data
-    #T = []    # test data
-    read_index = 0
-    for row in test_data:
-        if read_index:
+    with open('../pseudotest.csv', 'r') as incsv:
+        test_data = csv.reader(incsv)    # read testing data
+        next(test_data)    # skip first row
+        for row in test_data:
             T.append(np.array(row[0:]))
-        read_index += 1
 
-    #close files
-    f1.close()
-    f2.close()
+
+def CSV_write(Fname, Leng, WTdata):
+    with open('%s.csv' % Fname, 'w') as outcsv:
+        csv_writer = csv.writer(outcsv)
+        csv_writer.writerow(["ImageId", "Label"])
+        for y in range(Leng):
+            csv_writer.writerow([y + 1, WTdata[y]['ID']])
 
 if __name__ == "__main__":
     Labels = []
@@ -54,10 +46,10 @@ if __name__ == "__main__":
     T = []
     CSV_read(Labels, X, T)
 
-    logger.info("in main")
-    logger.info("Labels:")
-    logger.info(Labels)
-    logger.info("X:")
-    logger.info(X)
-    logger.info("T:")
-    logger.info(T)
+    logger.debug("in main")
+    logger.debug("Labels:")
+    logger.debug(Labels)
+    logger.debug("X:")
+    logger.debug(X)
+    logger.debug("T:")
+    logger.debug(T)
