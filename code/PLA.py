@@ -15,7 +15,6 @@
 
 import numpy as np
 from numpy import linalg as LA
-#import csv
 import logging
 import random
 import CSVRW
@@ -92,35 +91,17 @@ def Train(P, X, desire_y):
 
 
 Class = 10    # multi-classfication
-Iteration = 100
 
 if __name__ == "__main__":
 
 #step1 read data from files (train.csv and test.csv)
-    logger.info("Step1 read data")
-    '''
-    f1 = open('../train.csv', "r")
-    f2 = open('../test.csv', "r")
-    #f2 = open('../pseudotest.csv', "r")
-    train_data = csv.reader(f1)
-    test_data = csv.reader(f2)
-    '''
-    logger.info("read data finish")
-
 #step2 resturct data to feasible format
+    logger.info("Step1 read data")
     logger.info("Step2 resturct data")
 
     Labels = []
     X = []    # input vector
     T = []    # test data
-    '''
-    read_index = 0
-    for row in train_data:
-        if read_index:
-            Labels.append(row[0])
-            X.append(np.array(row[1:]))
-        read_index = read_index + 1
-    '''
 
     CSVRW.CSV_read(Labels, X, T)
     d = len(X[0])    # d -> dimension of X
@@ -149,21 +130,20 @@ if __name__ == "__main__":
     for i in range(Class):
         Perceptron_list.append(Perceptron(i, d))
 
-    for i in range(N):
-        print(("Training %f%%" % (float(i) / N * 100)))
-        logger.info(("Data NO%d" % (i)))
-        cur_label = int(Labels[i])    # current desired label
-        logger.info(("cur_label = %d" % cur_label))
-        cur_x = X[i]             # current input vector
-        cur_x = np.array(cur_x, dtype=float)
-        for j in range(Class):
-            logger.info(("Train Per NO.%d" % j))
-            if j == cur_label:    # perceptron NO y should say 1
+    for p in range(Class):    # train each perceptron
+        logger.info(("Train Per NO.%d" % p))
+        for i in range(N):
+            print(("Training %f%%" % (float(i) / N * 100)))
+            cur_label = int(Labels[i])    # current desired label
+            logger.info(("cur_label = %d" % cur_label))
+            cur_x = X[i]             # current input vector
+            cur_x = np.array(cur_x, dtype=float)
+            if cur_label == p:    # perceptron NO.p, if label == p means match!
                 logger.info("active")
-                Train(Perceptron_list[j], cur_x, 1)
-            else:                 # others should say -1
+                Train(Perceptron_list[p], cur_x, 1)
+            else:                 # others mismatch
                 logger.info("in-active")
-                Train(Perceptron_list[j], cur_x, -1)
+                Train(Perceptron_list[p], cur_x, -1)
 
     logger.info("training finish")
 
@@ -173,14 +153,6 @@ if __name__ == "__main__":
 
 #step4 evaluate g(X) by test data
     logger.info("Step4 test data")
-    '''
-    T = []    # test data
-    read_index = 0
-    for row in test_data:
-        if read_index:
-            T.append(np.array(row[0:]))
-        read_index += 1
-    '''
 
     N_T = len(T)       # number of test data
     Record = []        # record for test result
@@ -224,11 +196,3 @@ if __name__ == "__main__":
     CSVRW.CSV_write('PLAver1.1', N_T, New_Record)
 
     logger.info("write data finish")
-
-'''
-#step final close files
-
-    f1.close()
-    f2.close()
-    logger.info("End of program")
-'''

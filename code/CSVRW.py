@@ -26,7 +26,8 @@ def CSV_read(Labels, X, T):
             Labels.append(row[0])
             X.append(np.array(row[1:]))
 
-    with open('../pseudotest.csv', 'r') as incsv:
+#    with open('../pseudotest.csv', 'r') as incsv:
+    with open('../test.csv', 'r') as incsv:
         test_data = csv.reader(incsv)    # read testing data
         next(test_data)    # skip first row
         for row in test_data:
